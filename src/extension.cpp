@@ -97,7 +97,6 @@ static void vector_from(sqlite3_context *context, int argc, sqlite3_value **argv
 #pragma endregion
 
 #pragma region vector general
-// TODO should return fvec, ivec, or bvec depending on input. How do bvec, though?
 static void vector_value_at(sqlite3_context *context, int argc, sqlite3_value **argv) {
   std::vector<float>*v = valueAsVector(argv[0]);
   if(v == NULL) return;
@@ -114,7 +113,12 @@ static void vector_value_at(sqlite3_context *context, int argc, sqlite3_value **
     }
     else sqlite3_result_error_nomem(context);
   }
-  
+}
+
+static void vector_length(sqlite3_context *context, int argc, sqlite3_value **argv) {
+  VectorFloat* v = (VectorFloat*) sqlite3_value_pointer(argv[0], VECTOR_FLOAT_POINTER_NAME);
+  if(v==NULL) return;
+  sqlite3_result_int64(context, v->size);
 }
 #pragma endregion
 
@@ -444,6 +448,7 @@ extern "C" {
     sqlite3_create_function_v2(db, "vector_debug", 0, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_debug, 0, 0, 0); 
     sqlite3_create_function_v2(db, "vector_debug", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_debug, 0, 0, 0); 
 
+    sqlite3_create_function_v2(db, "vector_length", 1, SQLITE_UTF8|SQLITE_INNOCUOUS, 0, vector_length, 0, 0, 0); 
     sqlite3_create_function_v2(db, "vector_value_at", 2, SQLITE_UTF8|SQLITE_INNOCUOUS, 0, vector_value_at, 0, 0, 0); 
     sqlite3_create_function_v2(db, "vector_from_json", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_from_json, 0, 0, 0); 
     sqlite3_create_function_v2(db, "vector_to_json", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_to_json, 0, 0, 0); 

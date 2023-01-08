@@ -19,9 +19,6 @@ add_library(sqlite-vector SHARED src/extension.cpp src/vectors.cpp)
 target_link_libraries(sqlite-vector sqlite3)
 target_link_libraries(sqlite-vector nlohmann_json::nlohmann_json)
 
-
-##target_link_libraries(myProject PRIVATE faiss)
-
 set_target_properties(sqlite-vector PROPERTIES PREFIX "")
 set_target_properties(sqlite-vector PROPERTIES PREFIX "")
 set_target_properties(sqlite-vector PROPERTIES OUTPUT_NAME "vector0")
