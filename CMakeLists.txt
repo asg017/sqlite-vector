@@ -1,7 +1,7 @@
 
 cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
 
-project(sqlite-vector VERSION 0.0.0)
+project(sqlite-vector VERSION 0.0.1.1)
 
 
 set(CMAKE_CXX_STANDARD 11)
