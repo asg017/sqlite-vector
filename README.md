@@ -36,3 +36,9 @@ select vector_value_at(
 select *
 from vector_fvecs_each(readfile('sift1m_base.fvecs'));
 ```
+
+- `vector_fvecs_each_read()`
+- `vector_ivecs_each()`
+- `vector_ivecs_each_read()`
+- `vector_bvecs_each()`
+- `vector_bvecs_each_read()`

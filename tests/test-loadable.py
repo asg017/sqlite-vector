@@ -37,12 +37,14 @@ FUNCTIONS = [
   'vector_debug',
   'vector_from_blob',
   'vector_from_json',
+  'vector_length',
   'vector_to_blob',
   'vector_to_json',
+  'vector_value_at',
   'vector_version',
 ]
 
-MODULES = []
+MODULES = ['vector_fvecs_each']
 class TestVector(unittest.TestCase):
   def test_funcs(self):
     funcs = list(map(lambda a: a[0], db.execute("select name from loaded_functions").fetchall()))
@@ -103,6 +105,19 @@ class TestVector(unittest.TestCase):
   def test_vector_to_json(self):
     vector_to_json = lambda x: db.execute("select vector_debug(vector_to_json(vector_from_json(json(?))))", [x]).fetchone()[0]
     self.assertEqual(vector_to_json('[0.1, 0.2, 0.3]'), "size: 3 [0.100000, 0.200000, 0.300000]")
+  
+  def test_vector_length(self):
+    vector_length = lambda x: db.execute("select vector_length(vector_from_json(json(?)))", [x]).fetchone()[0]
+    self.assertEqual(vector_length('[0.1, 0.2, 0.3]'), 3)
+    self.assertEqual(vector_length('[0.1]'), 1)
+    self.assertEqual(vector_length('[]'), 0)
+  
+  def test_vector_value_at(self):
+    vector_value_at = lambda x, y: db.execute("select vector_value_at(vector_from_json(json(?)), ?)", [x, y]).fetchone()[0]
+    self.assertAlmostEqual(vector_value_at('[0.1, 0.2, 0.3]', 0), 0.1)
+    self.assertAlmostEqual(vector_value_at('[0.1, 0.2, 0.3]', 1), 0.2)
+    self.assertAlmostEqual(vector_value_at('[0.1, 0.2, 0.3]', 2), 0.3)
+    self.assertAlmostEqual(vector_value_at('[0.1, 0.2, 0.3]', 3), 0.3)
 
 
 class TestCoverage(unittest.TestCase):

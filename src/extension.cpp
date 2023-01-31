@@ -450,6 +450,7 @@ extern "C" {
 
     sqlite3_create_function_v2(db, "vector_length", 1, SQLITE_UTF8|SQLITE_INNOCUOUS, 0, vector_length, 0, 0, 0); 
     sqlite3_create_function_v2(db, "vector_value_at", 2, SQLITE_UTF8|SQLITE_INNOCUOUS, 0, vector_value_at, 0, 0, 0); 
+    
     sqlite3_create_function_v2(db, "vector_from_json", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_from_json, 0, 0, 0); 
     sqlite3_create_function_v2(db, "vector_to_json", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_to_json, 0, 0, 0); 
     
