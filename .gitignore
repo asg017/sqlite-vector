@@ -1,3 +1,4 @@
-vendor/
+vendor/sqlite*
+vendor/json
 build/
 tests/data/
