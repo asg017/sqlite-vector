@@ -1,3 +1,4 @@
 vendor/sqlite*
 build/
+build_release/
 tests/data/
