@@ -80,29 +80,18 @@ class TestVector(unittest.TestCase):
     #import pdb;pdb.set_trace()
     raises_small_blob_header(b"")
     raises_small_blob_header(b"v")
-    raises_small_blob_header(b"v\x01")
-    raises_small_blob_header(b"v\x01\x00")
-    raises_small_blob_header(b"v\x01\x00\x00")
-    raises_small_blob_header(b"v\x01\x00\x00\x00")
     
     with self.assertRaisesRegex(sqlite3.OperationalError, "Blob not well-formatted vector blob"):
         db.execute("select vector_from_blob(?)", [b"V\x01\x00\x00\x00\x00"]).fetchall()
     
     with self.assertRaisesRegex(sqlite3.OperationalError, "Blob type not right"):
         db.execute("select vector_from_blob(?)", [b"v\x00\x00\x00\x00\x00"]).fetchall()
-    
-    with self.assertRaisesRegex(sqlite3.OperationalError, "unreasonable blob type size, negative"):
-        db.execute("select vector_from_blob(?)", [b"v\x01\xff\xff\xff\xff"]).fetchall()
-    
-    with self.assertRaisesRegex(sqlite3.OperationalError, "unreasonable vector size, doesn't match blob size"):
-        db.execute("select vector_debug(vector_from_blob(?))", [b"v\x01\x01\x00\x00\x00"]).fetchone()
-    
-
 
   def test_vector_to_blob(self):
     vector_to_blob = lambda x: db.execute("select vector_to_blob(vector_from_json(json(?)))", [x]).fetchone()[0]
-    self.assertEqual(vector_to_blob("[]"), b"v\x01\x00\x00\x00\x00")
-    self.assertEqual(vector_to_blob("[0.1]"), b"v\x01\x01\x00\x00\x00\xcd\xcc\xcc=")
+    self.assertEqual(vector_to_blob("[]"), b"v\x01")
+    self.assertEqual(vector_to_blob("[0.1]"), b"v\x01\xcd\xcc\xcc=")
+    self.assertEqual(vector_to_blob("[0.1, 0]"), b"v\x01\xcd\xcc\xcc=\x00\x00\x00\x00")
   
   def test_vector_to_raw(self):
     vector_to_raw = lambda x: db.execute("select vector_to_raw(vector_from_json(json(?)))", [x]).fetchone()[0]

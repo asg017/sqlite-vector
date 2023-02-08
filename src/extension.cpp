@@ -48,17 +48,15 @@ std::vector<float> * vectorFromBlobValue(sqlite3_value*value, const char ** pzEr
   const void * b;
   char header;
   char type;
-  int size;
 
-  if(n < (6)) {
+  if(n < (2)) {
     *pzErrMsg = "Vector blob size less than header length";
     return NULL;
   }
   b = sqlite3_value_blob(value);
   memcpy(&header, ((char *) b + 0), sizeof(char));
   memcpy(&type,   ((char *) b + 1), sizeof(char));
-  memcpy(&size,   ((char *) b + 2), sizeof(int));
-
+  
   if(header != VECTOR_BLOB_HEADER_BYTE) {
     *pzErrMsg = "Blob not well-formatted vector blob";
     return NULL;
@@ -67,18 +65,9 @@ std::vector<float> * vectorFromBlobValue(sqlite3_value*value, const char ** pzEr
     *pzErrMsg = "Blob type not right";
     return NULL;
   }
-  if(size < 0) {
-    *pzErrMsg = "unreasonable blob type size, negative";
-    return NULL;
-  }
-  
-  if(size != ((n - 1 - 1 - 4)) / sizeof(float)) {
-    *pzErrMsg = "unreasonable vector size, doesn't match blob size";
-    return NULL;
-  }
-  
-  float * v = (float *) ((char *)b + 6); 
-  return new std::vector<float>(v, v+size); 
+  int numElements = (n - 2)/sizeof(float);
+  float * v = (float *) ((char *)b + 2); 
+  return new std::vector<float>(v, v+numElements); 
 }
 
 std::vector<float> * vectorFromRawBlobValue(sqlite3_value*value, const char ** pzErrMsg) {
@@ -230,14 +219,13 @@ static void vector_to_blob(sqlite3_context *context, int argc, sqlite3_value **a
   if(v == NULL) return;
   
   int sz = v->size();
-  int n = (sizeof(char)) + (sizeof(char)) + (sizeof(int)) + (sz * 4);
+  int n = (sizeof(char)) + (sizeof(char)) + (sz * 4);
   void * b = sqlite3_malloc(n);
   memset(b, 0, n);
 
   memcpy((void *) ((char *) b+0), (void *) &VECTOR_BLOB_HEADER_BYTE, sizeof(char));
   memcpy((void *) ((char *) b+1), (void *) &VECTOR_BLOB_HEADER_TYPE, sizeof(char));
-  memcpy((void *) ((char *) b+2), (void *) &sz, sizeof(int));
-  memcpy((void *) ((char *) b+6), (void *) v->data(), sz*4);
+  memcpy((void *) ((char *) b+2), (void *) v->data(), sz*4);
   sqlite3_result_blob64(context, b, n, sqlite3_free);
   delete v;
   
