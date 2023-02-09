@@ -134,8 +134,8 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: sqlite-vector-macos-wheels
-          path: dist/debug/
+          path: dist/debug/wheels
       - run: brew install python
-      - run: /usr/local/opt/python@3/libexec/bin/pip install --find-links dist/debug/ sqlite_vector
+      - run: /usr/local/opt/python@3/libexec/bin/pip install --find-links dist/debug/wheels sqlite_vector
       - run: make test-loadable python=/usr/local/opt/python@3/libexec/bin/python
       - run: make test-python python=/usr/local/opt/python@3/libexec/bin/python
