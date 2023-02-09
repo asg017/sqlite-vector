@@ -544,11 +544,10 @@ extern "C" {
     pGlobal->api.iVersion = 0;
     pGlobal->api.xValueAsVector = valueAsVector;
     pGlobal->api.xResultVector = resultVector;
-    rc = sqlite3_create_function_v2(db, "vector0", 1,
-                               SQLITE_UTF8,
-                               p,
-                               vector0, 0, 0, sqlite3_free);
-     static const struct {
+    rc = sqlite3_create_function_v2(db, "vector0", 1, SQLITE_UTF8, p, vector0, 0, 0, sqlite3_free);
+    printf("vector0 rc=%d\n", rc);
+    
+    static const struct {
     char *zFName;
     int nArg;
     void* pAux;
@@ -568,7 +567,7 @@ extern "C" {
     { (char*) "vector_from_raw",    1,  NULL, vector_from_raw,  SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS},
     { (char*) "vector_to_raw",      1,  NULL, vector_to_raw,    SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS},
   };
-    for(int i=0; i<sizeof(aFunc)/sizeof(aFunc[0]) && rc==SQLITE_OK; i++){
+    for(int i=0; i<sizeof(aFunc)/sizeof(aFunc[0]); i++){
       rc = sqlite3_create_function_v2(db, aFunc[i].zFName, aFunc[i].nArg,
                                aFunc[i].flags,
                                aFunc[i].pAux,
