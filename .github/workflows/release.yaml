@@ -97,9 +97,7 @@ jobs:
     needs:
       [
         build-macos-extension,
-        build-macos-arm-extension,
         build-ubuntu-extension,
-        build-windows-extension,
       ]
     permissions:
       contents: write
