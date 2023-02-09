@@ -41,7 +41,7 @@ $(prefix):
 	mkdir -p $(prefix)/debug
 	mkdir -p $(prefix)/release
 
-$(TARGET_LOADABLE): $(prefix)
+$(TARGET_LOADABLE): $(prefix) src/extension.cpp
 	cmake -B build; make -C build
 	cp build/vector0.$(LOADABLE_EXTENSION) $@
 

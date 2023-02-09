@@ -528,8 +528,9 @@ extern "C" {
   #ifdef _WIN32
   __declspec(dllexport)
   #endif
-  int sqlite3_extension_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pApi) {
+  int sqlite3_vector_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pApi) {
     SQLITE_EXTENSION_INIT2(pApi);
+    printf("please %s\n", sqlite3_version);
 
     Vector0Global *pGlobal = 0;
     pGlobal = (Vector0Global*)sqlite3_malloc(sizeof(Vector0Global));
