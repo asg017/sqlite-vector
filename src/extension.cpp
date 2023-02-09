@@ -72,10 +72,9 @@ std::vector<float> * vectorFromBlobValue(sqlite3_value*value, const char ** pzEr
 
 std::vector<float> * vectorFromRawBlobValue(sqlite3_value*value, const char ** pzErrMsg) {
   int n = sqlite3_value_bytes(value);
-  
   // must be divisible by 4
-  if(!(n%4)) {
-    *pzErrMsg = "invalid";
+  if(n%4) {
+    *pzErrMsg = "Invalid raw blob length, must be divisible by 4";
     return NULL;
   }
   const void * b = sqlite3_value_blob(value);
@@ -84,7 +83,7 @@ std::vector<float> * vectorFromRawBlobValue(sqlite3_value*value, const char ** p
   return new std::vector<float>(v, v+ (n / 4)); 
 }
 
-// Returns vector point MUST be deleted
+// Returns vector pointer MUST be deleted
 static std::vector<float>* valueAsVector(sqlite3_value*value) {
   // Option 1: If the value is a "vectorf32v0" pointer, create vector from that
   VectorFloat* v = (VectorFloat*) sqlite3_value_pointer(value, VECTOR_FLOAT_POINTER_NAME);

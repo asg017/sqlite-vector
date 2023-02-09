@@ -100,7 +100,22 @@ class TestVector(unittest.TestCase):
     self.assertEqual(vector_to_raw("[0.1, 0]"), b"\xcd\xcc\xcc=\x00\x00\x00\x00")
   
   def test_vector_from_raw(self):
-    self.skipTest("a")
+    vector_from_raw_blob = lambda x: db.execute("select vector_debug(vector_from_raw(?))", [x]).fetchone()[0]
+    self.assertEqual(
+      vector_from_raw_blob(b""),
+      'size: 0 []'
+    )
+    self.assertEqual(
+      vector_from_raw_blob(b"\x00\x00\x00\x00"),
+      'size: 1 [0.000000]'
+    )
+    self.assertEqual(
+      vector_from_raw_blob(b"\x00\x00\x00\x00\xcd\xcc\xcc="),
+      'size: 2 [0.000000, 0.100000]'
+    )
+
+    with self.assertRaisesRegex(sqlite3.OperationalError, "Invalid raw blob length, must be divisible by 4"):
+      vector_from_raw_blob(b"abc")
 
   def test_vector_from_json(self):
     vector_from_json = lambda x: db.execute("select vector_debug(vector_from_json(json(?)))", [x]).fetchone()[0]
