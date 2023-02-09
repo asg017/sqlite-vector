@@ -6,8 +6,8 @@ on:
 permissions:
   contents: read
 jobs:
-  test-ubuntu:
-    name: Testing ubuntu-20.04
+  build-ubuntu-extension:
+    name: Building ubuntu
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
@@ -27,14 +27,47 @@ jobs:
         run: ./configure && make
 
       - run: make loadable
-      - run: make test
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: sqlite-vector-ubuntu
-          path: build/vector0.so
-  test-macos:
-    name: Testing macos-latest
+          path: dist/debug/vector0.so
+  build-ubuntu-python:
+    runs-on: ubuntu-20.04
+    needs: [build-ubuntu-extension]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download workflow artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: sqlite-vector-ubuntu
+          path: dist/debug/
+      - uses: actions/setup-python@v3
+      - run: pip install wheel
+      - run: make python
+      - run: make datasette
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sqlite-vector-ubuntu-wheels
+          path: dist/debug/wheels/*.whl
+  test-ubuntu:
+    runs-on: ubuntu-20.04
+    needs: [build-ubuntu-extension, build-ubuntu-python]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: sqlite-vector-ubuntu
+          path: dist/debug/
+      - uses: actions/download-artifact@v3
+        with:
+          name: sqlite-vector-ubuntu-wheels
+          path: dist/debug/
+      - run: pip install --find-links dist/debug/ sqlite_vector
+      - run: make test-loadable
+      - run: make test-python
+  build-macos-extension:
+    name: Building macos-latest
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
@@ -59,7 +92,7 @@ jobs:
         with:
           path: build
           key: ${{ runner.os }}-build
-      - run: cmake -B build; make -C build
+      - run: make loadable
         env:
           # https://stackoverflow.com/questions/48825416/missing-openmp-c-flags-openmp-c-lib-names
           CC: /usr/local/opt/llvm/bin/clang
@@ -71,3 +104,38 @@ jobs:
         with:
           name: sqlite-vector-macos
           path: build/vector0.dylib
+  build-macos-python:
+    runs-on: macos-latest
+    needs: [build-macos-extension]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download workflow artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: sqlite-vector-macos
+          path: dist/debug/
+      - uses: actions/setup-python@v3
+      - run: pip install wheel
+      - run: make python
+      - run: make datasette
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sqlite-vector-macos-wheels
+          path: dist/debug/wheels/*.whl
+  test-macos:
+    runs-on: macos-latest
+    needs: [build-macos-extension, build-macos-python]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: sqlite-vector-macos
+          path: dist/debug/
+      - uses: actions/download-artifact@v3
+        with:
+          name: sqlite-vector-macos-wheels
+          path: dist/debug/
+      - run: brew install python
+      - run: /usr/local/opt/python@3/libexec/bin/pip install --find-links dist/debug/ sqlite_vector
+      - run: make test-loadable python=/usr/local/opt/python@3/libexec/bin/python
+      - run: make test-python python=/usr/local/opt/python@3/libexec/bin/python

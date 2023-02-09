@@ -1,0 +1,5 @@
+#define SQLITE_VECTOR_VERSION_MAJOR @sqlite-vector_VERSION_MAJOR@
+#define SQLITE_VECTOR_VERSION_MINOR @sqlite-vector_VERSION_MINOR@
+#define SQLITE_VECTOR_VERSION_PATCH @sqlite-vector_VERSION_PATCH@
+
+#define SQLITE_VECTOR_VERSION "v@sqlite-vector_VERSION_MAJOR@.@sqlite-vector_VERSION_MINOR@.@sqlite-vector_VERSION_PATCH@"

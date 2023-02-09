@@ -3,12 +3,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <vector>
+#include "vectors.h"
+#include "sqlite-vector.h"
 
 #include "sqlite3ext.h"
 
 SQLITE_EXTENSION_INIT1
 
-#include "vectors.h"
+
 
 // https://github.com/sqlite/sqlite/blob/master/src/json.c#L88-L89
 #define JSON_SUBTYPE  74    /* Ascii for "J" */
@@ -130,7 +132,7 @@ static std::vector<float>* valueAsVector(sqlite3_value*value) {
 
 #pragma region meta
 static void vector_version(sqlite3_context *context, int argc, sqlite3_value **argv) {
-  sqlite3_result_text(context, "yo", -1, SQLITE_STATIC);
+  sqlite3_result_text(context, SQLITE_VECTOR_VERSION, -1, SQLITE_STATIC);
 }
 static void vector_debug(sqlite3_context *context, int argc, sqlite3_value **argv) {
   if(argc){

@@ -3,7 +3,7 @@ import unittest
 import time
 import os
 
-EXT_PATH="./build/vector0"
+EXT_PATH="./dist/debug/vector0"
 
 
 def connect(ext, path=":memory:"):
@@ -59,7 +59,7 @@ class TestVector(unittest.TestCase):
 
     
   def test_vector_version(self):
-    self.assertEqual(db.execute("select vector_version()").fetchone()[0], "yo")
+    self.assertEqual(db.execute("select vector_version()").fetchone()[0][0], "v")
 
   def test_vector_debug(self):
     debug = db.execute("select vector_debug()").fetchone()[0].split('\n')
