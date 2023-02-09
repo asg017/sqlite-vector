@@ -64,6 +64,13 @@ class TestVector(unittest.TestCase):
   def test_vector_debug(self):
     debug = db.execute("select vector_debug()").fetchone()[0].split('\n')
     self.assertEqual(len(debug), 1)
+    self.assertEqual(
+      db.execute("select vector_debug(json('[]'))").fetchone()[0],
+      "size: 0 []"
+    )
+    with self.assertRaisesRegex(sqlite3.OperationalError, "value not a vector"):
+      db.execute("select vector_debug(']')").fetchone()
+    
   
   def test_vector0(self):
     
@@ -118,9 +125,12 @@ class TestVector(unittest.TestCase):
       vector_from_raw_blob(b"abc")
 
   def test_vector_from_json(self):
-    vector_from_json = lambda x: db.execute("select vector_debug(vector_from_json(json(?)))", [x]).fetchone()[0]
+    vector_from_json = lambda x: db.execute("select vector_debug(vector_from_json(?))", [x]).fetchone()[0]
     self.assertEqual(vector_from_json('[0.1, 0.2, 0.3]'), "size: 3 [0.100000, 0.200000, 0.300000]")
     self.assertEqual(vector_from_json('[]'), "size: 0 []")
+    with self.assertRaisesRegex(sqlite3.OperationalError, "input not valid json, or contains non-float data"):
+      vector_from_json('')
+    #db.execute("select vector_from_json(?)", [""]).fetchone()[0]
   
   def test_vector_to_json(self):
     vector_to_json = lambda x: db.execute("select vector_debug(vector_to_json(vector_from_json(json(?))))", [x]).fetchone()[0]

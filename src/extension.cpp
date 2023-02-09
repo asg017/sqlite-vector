@@ -83,16 +83,28 @@ std::vector<float> * vectorFromRawBlobValue(sqlite3_value*value, const char ** p
   return new std::vector<float>(v, v+ (n / 4)); 
 }
 
+std::vector<float> * vectorFromTextValue(sqlite3_value*value) {
+  std::vector<float> v; 
+
+  try {
+    json data = json::parse(sqlite3_value_text(value));
+    data.get_to(v);
+  } catch (const json::exception&) {
+    return NULL;
+  }
+
+  return  new std::vector<float>(v);
+}
+
 // Returns vector pointer MUST be deleted
 static std::vector<float>* valueAsVector(sqlite3_value*value) {
   // Option 1: If the value is a "vectorf32v0" pointer, create vector from that
   VectorFloat* v = (VectorFloat*) sqlite3_value_pointer(value, VECTOR_FLOAT_POINTER_NAME);
   if (v!=NULL) return new std::vector<float>(v->data, v->data + v->size);
+  std::vector<float> * vec;
 
-  
-  if(sqlite3_value_type(value) == SQLITE_BLOB) {
-    // Option 2: value is a blob in vector format
-    std::vector<float> * vec;
+  // Option 2: value is a blob in vector format
+  if(sqlite3_value_type(value) == SQLITE_BLOB) {      
     const char * pzErrMsg = 0;
     if((vec = vectorFromBlobValue(value, &pzErrMsg)) != NULL) {
       return vec;
@@ -104,10 +116,11 @@ static std::vector<float>* valueAsVector(sqlite3_value*value) {
   // Option 3: if value is a JSON array coercible to float vector, use that
   //if(sqlite3_value_subtype(value) == JSON_SUBTYPE) {
   if(sqlite3_value_type(value) == SQLITE_TEXT) {
-    std::vector<float> v; 
-    json data = json::parse(sqlite3_value_text(value));
-    data.get_to(v);
-    return  new std::vector<float>(v);
+    if((vec = vectorFromTextValue(value)) != NULL) {
+      return vec;
+    }else {
+      return NULL;
+    }
   }
 
   // else, value isn't a vector
@@ -123,7 +136,7 @@ static void vector_debug(sqlite3_context *context, int argc, sqlite3_value **arg
   if(argc){
     std::vector<float>* v = valueAsVector(argv[0]);
     if(v==NULL) {
-      sqlite3_result_error(context, "value not vector", -1);
+      sqlite3_result_error(context, "value not a vector", -1);
       return;
     }
     sqlite3_str * str = sqlite3_str_new(0);
@@ -196,11 +209,18 @@ static void vector_to_json(sqlite3_context *context, int argc, sqlite3_value **a
 }
 static void vector_from_json(sqlite3_context *context, int argc, sqlite3_value **argv) {
   const char * text = (const char *) sqlite3_value_text(argv[0]);
-  json j = json::parse(text);
-  std::vector<float> *v = new std::vector<float>(); 
-  j.get_to(*v);
-  resultVector(context, v);
-  delete v;
+  std::vector<float>* v =vectorFromTextValue(argv[0]);
+  if(v == NULL) {
+    sqlite3_result_error(context, "input not valid json, or contains non-float data", -1);
+  }else {
+    resultVector(context, v);
+    delete v;
+  }
+
+  //json j = json::parse(text);
+  //std::vector<float> *v = new std::vector<float>(); 
+  //j.get_to(*v);
+  
   
 }
 #pragma endregion
