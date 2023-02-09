@@ -529,6 +529,7 @@ extern "C" {
   __declspec(dllexport)
   #endif
   int sqlite3_vector_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pApi) {
+    int rc;
     SQLITE_EXTENSION_INIT2(pApi);
     printf("please %s\n", sqlite3_version);
 
@@ -543,25 +544,38 @@ extern "C" {
     pGlobal->api.iVersion = 0;
     pGlobal->api.xValueAsVector = valueAsVector;
     pGlobal->api.xResultVector = resultVector;
-    sqlite3_create_function(db, "vector0", 1, SQLITE_UTF8, p, vector0, 0, 0);
+    rc = sqlite3_create_function_v2(db, "vector0", 1, SQLITE_UTF8, p, vector0, 0, 0, 0);
+    if(rc != SQLITE_OK) return rc;
 
-    sqlite3_create_function_v2(db, "vector_version", 0, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_version, 0, 0, 0);
-    sqlite3_create_function_v2(db, "vector_debug", 0, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_debug, 0, 0, 0); 
-    sqlite3_create_function_v2(db, "vector_debug", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_debug, 0, 0, 0); 
+    rc = sqlite3_create_function_v2(db, "vector_version", 0, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_version, 0, 0, 0);
+    if(rc != SQLITE_OK) return rc;
+    rc = sqlite3_create_function_v2(db, "vector_debug", 0, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_debug, 0, 0, 0); 
+    if(rc != SQLITE_OK) return rc;
+    rc = sqlite3_create_function_v2(db, "vector_debug", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_debug, 0, 0, 0); 
+    if(rc != SQLITE_OK) return rc;
 
-    sqlite3_create_function_v2(db, "vector_length", 1, SQLITE_UTF8|SQLITE_INNOCUOUS, 0, vector_length, 0, 0, 0); 
-    sqlite3_create_function_v2(db, "vector_value_at", 2, SQLITE_UTF8|SQLITE_INNOCUOUS, 0, vector_value_at, 0, 0, 0); 
+    rc = sqlite3_create_function_v2(db, "vector_length", 1, SQLITE_UTF8|SQLITE_INNOCUOUS, 0, vector_length, 0, 0, 0); 
+    if(rc != SQLITE_OK) return rc;
+    rc = sqlite3_create_function_v2(db, "vector_value_at", 2, SQLITE_UTF8|SQLITE_INNOCUOUS, 0, vector_value_at, 0, 0, 0); 
+    if(rc != SQLITE_OK) return rc;
     
-    sqlite3_create_function_v2(db, "vector_from_json", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_from_json, 0, 0, 0); 
-    sqlite3_create_function_v2(db, "vector_to_json", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_to_json, 0, 0, 0); 
+    rc = sqlite3_create_function_v2(db, "vector_from_json", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_from_json, 0, 0, 0); 
+    if(rc != SQLITE_OK) return rc;
+    rc = sqlite3_create_function_v2(db, "vector_to_json", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_to_json, 0, 0, 0); 
+    if(rc != SQLITE_OK) return rc;
     
-    sqlite3_create_function_v2(db, "vector_from_blob", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_from_blob, 0, 0, 0); 
-    sqlite3_create_function_v2(db, "vector_to_blob", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_to_blob, 0, 0, 0); 
+    rc = sqlite3_create_function_v2(db, "vector_from_blob", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_from_blob, 0, 0, 0); 
+    if(rc != SQLITE_OK) return rc;
+    rc = sqlite3_create_function_v2(db, "vector_to_blob", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_to_blob, 0, 0, 0); 
+    if(rc != SQLITE_OK) return rc;
 
-    sqlite3_create_function_v2(db, "vector_from_raw", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_from_raw, 0, 0, 0); 
-    sqlite3_create_function_v2(db, "vector_to_raw", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_to_raw, 0, 0, 0); 
+    rc = sqlite3_create_function_v2(db, "vector_from_raw", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_from_raw, 0, 0, 0); 
+    if(rc != SQLITE_OK) return rc;
+    rc = sqlite3_create_function_v2(db, "vector_to_raw", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_to_raw, 0, 0, 0); 
+    if(rc != SQLITE_OK) return rc;
 
-    sqlite3_create_module(db, "vector_fvecs_each", &fvecsEachModule, 0);
+    rc = sqlite3_create_module(db, "vector_fvecs_each", &fvecsEachModule, 0);
+    if(rc != SQLITE_OK) return rc;
 
     
     //sqlite3_create_function_v2(db, "vector_fvecs", 1, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_fvecs, 0, 0, 0); 
