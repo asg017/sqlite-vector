@@ -11,8 +11,8 @@ set(JSON_BuildTests OFF CACHE INTERNAL "")
 add_subdirectory(vendor/json)
 
 # vendor in SQLite amalgammation
-include_directories(vendor/sqlite-snapshot-202212231449)
-link_directories(BEFORE vendor/sqlite-snapshot-202212231449)
+include_directories(vendor/sqlite)
+link_directories(BEFORE vendor/sqlite)
 
 add_library(sqlite-vector SHARED src/extension.cpp src/vectors.cpp)
 target_link_libraries(sqlite-vector sqlite3)
