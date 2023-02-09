@@ -85,12 +85,6 @@ jobs:
       - if: steps.cache-sqlite-build.outputs.cache-hit != 'true'
         working-directory: vendor/sqlite
         run: ./configure && make
-      - name: Cache cmake build
-        id: cache-cmake-build
-        uses: actions/cache@v3
-        with:
-          path: build
-          key: ${{ runner.os }}-build
       - run: make loadable
         #env:
         #  # https://stackoverflow.com/questions/48825416/missing-openmp-c-flags-openmp-c-lib-names
