@@ -37,17 +37,17 @@ TARGET_WHEELS_RELEASE=$(prefix)/release/wheels
 
 INTERMEDIATE_PYPACKAGE_EXTENSION=python/sqlite_vector/sqlite_vector/vector0.$(LOADABLE_EXTENSION)
 
-$(TARGET_LOADABLE):
-	cmake -B build; make -C build
-	mv build/vector0.$(LOADABLE_EXTENSION) $@
-
-$(TARGET_LOADABLE_RELEASE):
-	cmake -DCMAKE_BUILD_TYPE=Release -B build_release; make -C build_release
-	mv build_release/vector0.$(LOADABLE_EXTENSION) $@
-
 $(prefix):
 	mkdir -p $(prefix)/debug
 	mkdir -p $(prefix)/release
+
+$(TARGET_LOADABLE): $(prefix)
+	cmake -B build; make -C build
+	mv build/vector0.$(LOADABLE_EXTENSION) $@
+
+$(TARGET_LOADABLE_RELEASE): $(prefix)
+	cmake -DCMAKE_BUILD_TYPE=Release -B build_release; make -C build_release
+	mv build_release/vector0.$(LOADABLE_EXTENSION) $@
 
 $(TARGET_WHEELS): $(prefix)
 	mkdir -p $(TARGET_WHEELS)
