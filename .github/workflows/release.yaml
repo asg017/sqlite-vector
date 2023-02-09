@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          submodules: true
+          submodules: recursive
       - name: Cache sqlite build
         id: cache-sqlite-build
         uses: actions/cache@v3
@@ -40,7 +40,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: sqlite-vector-ubuntu
-          path: dist/debug/
+          path: dist/release/
       - uses: actions/setup-python@v3
       - run: pip install wheel
       - run: make python-release
@@ -48,14 +48,14 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: sqlite-vector-ubuntu-wheels
-          path: dist/debug/wheels/*.whl
+          path: dist/release/wheels/*.whl
   build-macos-extension:
     name: Building macos-latest
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
         with:
-          submodules: true
+          submodules: recursive
       - name: Cache sqlite build
         id: cache-sqlite-build
         uses: actions/cache@v3
@@ -83,7 +83,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: sqlite-vector-macos
-          path: dist/debug/
+          path: dist/release/
       - uses: actions/setup-python@v3
       - run: pip install wheel
       - run: make python-release
@@ -91,7 +91,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: sqlite-vector-macos-wheels
-          path: dist/debug/wheels/*.whl
+          path: dist/release/wheels/*.whl
   upload-release-assets:
     name: Upload release assets
     needs:
