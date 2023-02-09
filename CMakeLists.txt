@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
-project(sqlite-vector VERSION 0.0.1.3)
+project(sqlite-vector VERSION 0.0.1.4)
 
 configure_file(src/sqlite-vector.h.in sqlite-vector.h)
 
