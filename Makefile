@@ -43,11 +43,11 @@ $(prefix):
 
 $(TARGET_LOADABLE): $(prefix)
 	cmake -B build; make -C build
-	mv build/vector0.$(LOADABLE_EXTENSION) $@
+	cp build/vector0.$(LOADABLE_EXTENSION) $@
 
 $(TARGET_LOADABLE_RELEASE): $(prefix)
 	cmake -DCMAKE_BUILD_TYPE=Release -B build_release; make -C build_release
-	mv build_release/vector0.$(LOADABLE_EXTENSION) $@
+	cp build_release/vector0.$(LOADABLE_EXTENSION) $@
 
 $(TARGET_WHEELS): $(prefix)
 	mkdir -p $(TARGET_WHEELS)
