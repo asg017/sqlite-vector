@@ -544,7 +544,7 @@ extern "C" {
     pGlobal->api.iVersion = 0;
     pGlobal->api.xValueAsVector = valueAsVector;
     pGlobal->api.xResultVector = resultVector;
-    rc = sqlite3_create_function_v2(db, "vector0", 1, SQLITE_UTF8, p, vector0, 0, 0, 0);
+    rc = sqlite3_create_function_v2(db, "vector0", -1, SQLITE_UTF8, p, vector0, 0, 0, 0);
     if(rc != SQLITE_OK) goto fail;
 
     rc = sqlite3_create_function_v2(db, "vector_version", 0, SQLITE_UTF8|SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS, 0, vector_version, 0, 0, 0);
@@ -583,7 +583,7 @@ extern "C" {
     return SQLITE_OK;
 
     fail:
-      *pzErrMsg = (char*) sqlite3_errmsg(db);
+      *pzErrMsg = sqlite3_mprintf("%s", sqlite3_errmsg(db));
       return rc;
   }
 }

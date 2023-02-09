@@ -85,7 +85,6 @@ jobs:
       - if: steps.cache-sqlite-build.outputs.cache-hit != 'true'
         working-directory: vendor/sqlite
         run: ./configure && make
-      - run: brew install llvm
       - name: Cache cmake build
         id: cache-cmake-build
         uses: actions/cache@v3
@@ -135,7 +134,6 @@ jobs:
         with:
           name: sqlite-vector-macos-wheels
           path: dist/debug/wheels
-      - run: brew install python
       - run: /usr/local/opt/python@3/libexec/bin/pip install --find-links dist/debug/wheels sqlite_vector
       - run: find dist
       - run: make test-loadable python=/usr/local/opt/python@3/libexec/bin/python
