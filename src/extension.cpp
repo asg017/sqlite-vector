@@ -529,7 +529,6 @@ extern "C" {
   int sqlite3_vector_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pApi) {
     SQLITE_EXTENSION_INIT2(pApi);
     int rc = SQLITE_OK;
-    printf("please %s\n", sqlite3_version);
 
     Vector0Global *pGlobal = 0;
     pGlobal = (Vector0Global*)sqlite3_malloc(sizeof(Vector0Global));
@@ -543,7 +542,6 @@ extern "C" {
     pGlobal->api.xValueAsVector = valueAsVector;
     pGlobal->api.xResultVector = resultVector;
     rc = sqlite3_create_function_v2(db, "vector0", 1, SQLITE_UTF8, p, vector0, 0, 0, sqlite3_free);
-    printf("vector0 rc=%d\n", rc);
 
     static const struct {
     char *zFName;
